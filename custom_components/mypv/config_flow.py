@@ -91,7 +91,7 @@ class MypvConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     )
         else:
             user_input = {}
-            user_input[CONF_HOST] = "192.168.1.3"
+            user_input[CONF_HOST] = "192.168.0.0"
             user_input[CONF_MONITORED_CONDITIONS] = DEFAULT_MONITORED_CONDITIONS
 
         default_monitored_conditions = (
