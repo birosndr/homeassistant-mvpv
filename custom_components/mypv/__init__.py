@@ -7,14 +7,16 @@ from homeassistant.const import (
     CONF_HOST,
     CONF_MONITORED_CONDITIONS,
 )
+from homeassistant.const import Platform
 import homeassistant.helpers.config_validation as cv
 
 from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, SENSOR_TYPES, DATA_COORDINATOR
 from .coordinator import MYPVDataUpdateCoordinator
 
+PLATFORMS = [Platform.SENSOR]
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -31,7 +33,7 @@ CONFIG_SCHEMA = vol.Schema(
 )
 
 
-async def async_setup(hass, config):
+async def async_setup(hass: HomeAssistant, config):
     """Platform setup, do nothing."""
     hass.data.setdefault(DOMAIN, {})
 
@@ -46,7 +48,7 @@ async def async_setup(hass, config):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Load the saved entities."""
     coordinator = MYPVDataUpdateCoordinator(
         hass,
@@ -64,6 +66,6 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry):
     }
 
     hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+        hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     )
     return True

@@ -22,9 +22,13 @@ SUPPORTED_SENSOR_TYPES = list(SENSOR_TYPES)
 
 DEFAULT_MONITORED_CONDITIONS = [
     "device",
-    "power_act",
+    "power_ac9",
+    "power_solar_ac9",
     "temp1",
-    "fwversion",
+    "m0sum",
+    "ret_grid_power",
+    "grid_power_consumption",
+    "energy_consumption"
 ]
 
 
@@ -87,7 +91,7 @@ class MypvConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     )
         else:
             user_input = {}
-            user_input[CONF_HOST] = "192.168.0.0"
+            user_input[CONF_HOST] = "192.168.1.3"
             user_input[CONF_MONITORED_CONDITIONS] = DEFAULT_MONITORED_CONDITIONS
 
         default_monitored_conditions = (

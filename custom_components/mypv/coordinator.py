@@ -8,7 +8,7 @@ from datetime import date
 from async_timeout import timeout
 from homeassistant.util.dt import utcnow
 from homeassistant.const import CONF_HOST
-from homeassistant.helpers.typing import HomeAssistantType
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DOMAIN
@@ -19,7 +19,7 @@ _LOGGER = logging.getLogger(__name__)
 class MYPVDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching MYPV data."""
 
-    def __init__(self, hass: HomeAssistantType, *, config: dict, options: dict):
+    def __init__(self, hass: HomeAssistant, *, config: dict, options: dict):
         """Initialize global NZBGet data updater."""
         self._host = config[CONF_HOST]
         self._info = None
@@ -44,7 +44,7 @@ class MYPVDataUpdateCoordinator(DataUpdateCoordinator):
                 self._info = self.info_update()
 
             if self._setup is None or self._next_update < utcnow().timestamp():
-                self._next_update = utcnow().timestamp() + 120  # 86400
+                self._next_update = utcnow().timestamp() + 150  # 86400
                 self._setup = self.setup_update()
 
             return {
@@ -54,7 +54,7 @@ class MYPVDataUpdateCoordinator(DataUpdateCoordinator):
             }
 
         try:
-            async with timeout(8):
+            async with timeout(20):
                 return await self.hass.async_add_executor_job(_update_data)
         except Exception as error:
             raise UpdateFailed(f"Invalid response from API: {error}") from error
@@ -77,8 +77,8 @@ class MYPVDataUpdateCoordinator(DataUpdateCoordinator):
 
             _LOGGER.debug(data)
             return data
-        except:
-            pass
+        except Exception as error:
+            raise UpdateFailed(f"Invalid response from data_update: {error}") from error
 
     def info_update(self):
         """Update inverter info."""
@@ -88,7 +88,7 @@ class MYPVDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(info)
             return info
         except:
-            pass
+            raise UpdateFailed(f"Invalid response from info_update: {error}") from error
 
     def setup_update(self):
         """Update inverter info."""
@@ -98,4 +98,4 @@ class MYPVDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug(info)
             return info
         except:
-            pass
+            raise UpdateFailed(f"Invalid response from setup_update: {error}") from error
